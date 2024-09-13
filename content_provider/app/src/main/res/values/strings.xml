@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Content Provider</string>
+    <string name="title_activity_main">Content Provider</string>
+    <string name="grant_uri_permissions">Grant URI Permissions</string>
+</resources>

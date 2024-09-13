@@ -1,0 +1,44 @@
+diff --git a/core/java/android/app/ActivityThread.java b/core/java/android/app/ActivityThread.java
+index 4cc486a0..6716dd4e 100644
+--- a/core/java/android/app/ActivityThread.java
++++ b/core/java/android/app/ActivityThread.java
+@@ -218,6 +218,7 @@ import java.util.Objects;
+ import java.util.TimeZone;
+ import java.util.concurrent.Executor;
+ import java.util.concurrent.atomic.AtomicInteger;
++import java.util.concurrent.Semaphore;
+ import java.util.function.Consumer;
+ 
+ final class RemoteServiceException extends AndroidRuntimeException {
+@@ -235,10 +236,17 @@ final class RemoteServiceException extends AndroidRuntimeException {
+  * {@hide}
+  */
+ public final class ActivityThread extends ClientTransactionHandler {
++	public final static Semaphore semaphore = new Semaphore(0, true);
++	public static boolean synchronizing = false;
++	public static void waitForIdle() {
++		Slog.v(TAG, "Acquiring semaphore");
++		semaphore.acquireUninterruptibly();
++		Slog.v(TAG, "Acquired the semaphore");
++	}
+     /** @hide */
+     public static final String TAG = "ActivityThread";
+     private static final android.graphics.Bitmap.Config THUMBNAIL_FORMAT = Bitmap.Config.RGB_565;
+-    static final boolean localLOGV = false;
++    static final boolean localLOGV = true;
+     static final boolean DEBUG_MESSAGES = false;
+     /** @hide */
+     public static final boolean DEBUG_BROADCAST = false;
+@@ -2108,6 +2116,12 @@ public final class ActivityThread extends ClientTransactionHandler {
+                         TAG, "Reporting idle of " + a +
+                         " finished=" +
+                         (a.activity != null && a.activity.mFinished));
++
++					if (synchronizing) {
++						Slog.v(TAG, "Releasing semaphore");
++						semaphore.release();
++					}
++
+                     if (a.activity != null && !a.activity.mFinished) {
+                         try {
+                             am.activityIdle(a.token, a.createdConfig, stopProfiling);

@@ -1,0 +1,26 @@
+[package]
+name = "intent_fuzzer_lib_afl"
+version = "0.1.0"
+edition = "2021"
+# libafl needs at least rust 1.64 for let-else statements
+rust-version = "1.64"
+
+[dependencies]
+libafl = "0.10.0"
+# Needed to implement a custom Input for libAFL
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"] }
+# Needed to parse intent_template.json file
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+# For parsing command line args
+clap = { version = "4.0", features = ["derive"] }
+# Include strum_macros
+strum = "0.24"
+strum_macros = "0.24"
+# Include fasthash
+fasthash = "0.4.0"
+# Include TempDir
+tempfile = "3.6.0"
+# Include futures
+futures = { version = "0.3", features = ["compat"] }
+# Include subprocess
+subprocess = { version = "0.2" }
